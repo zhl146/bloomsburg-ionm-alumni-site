@@ -1,10 +1,11 @@
-import React, { Component } from "react";
+import React from "react";
 import { connect } from "react-redux";
 import { compose } from "redux";
+import { path } from "ramda";
 
 import { logIn, logOut } from "./actions";
 
-class AuthProvider extends Component {
+class AuthProvider extends React.Component {
   render() {
     const { loggedIn, logIn, logOut } = this.props;
     return this.props.render({ loggedIn, logIn, logOut });
@@ -12,7 +13,7 @@ class AuthProvider extends Component {
 }
 
 const mapStateToProps = state => ({
-  loggedIn: state.auth.loggedIn
+  loggedIn: path(["auth", "loggedIn"], state)
 });
 
 const mapDispatchToProps = {

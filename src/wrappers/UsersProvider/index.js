@@ -1,26 +1,28 @@
-import React, { Component } from "react";
+import React from "react";
 import { connect } from "react-redux";
 import { compose } from "redux";
+import { path, isEmpty } from "ramda";
 
-import { logIn, logOut } from "./actions";
+import { updateUsers } from "./actions";
 
-class UsersProvider extends Component {
-  componentDidMount() {}
+class UsersProvider extends React.Component {
+  componentDidMount() {
+    if (isEmpty(this.props.userProfiles)) this.props.updateUsers();
+  }
 
   render() {
-    const { loggedIn, logIn, logOut } = this.props;
-    return this.props.render({ loggedIn, logIn, logOut });
+    const { updateUsers, userProfiles } = this.props;
+    return this.props.render({ updateUsers, userProfiles });
   }
 }
 
 const mapStateToProps = state => ({
-  loggedIn: state.auth.loggedIn
+  userProfiles: path(["user", "userProfiles"], state)
 });
 
-const mapDispatchToProps = {
-  logIn,
-  logOut
-};
+const mapDispatchToProps = dispatch => ({
+  updateUsers: () => dispatch(updateUsers)
+});
 
 const enhance = compose(
   connect(
