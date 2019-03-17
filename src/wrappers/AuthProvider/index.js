@@ -1,31 +1,40 @@
-import React from "react";
-import { connect } from "react-redux";
-import { compose } from "redux";
-import { path } from "ramda";
+import React from 'react'
+import { connect } from 'react-redux'
+import { compose } from 'redux'
+import { path } from 'ramda'
 
-import { logIn, logOut } from "./actions";
+import { setSession } from './actions'
+
+import { isAuthenticated } from '../../Auth'
 
 class AuthProvider extends React.Component {
-  render() {
-    const { loggedIn, logIn, logOut } = this.props;
-    return this.props.render({ loggedIn, logIn, logOut });
-  }
+    render() {
+        const { token, profile, expiresAt, setSession } = this.props
+        const loggedIn = isAuthenticated(expiresAt)
+        return this.props.render({
+            token,
+            profile,
+            loggedIn,
+            setSession,
+        })
+    }
 }
 
 const mapStateToProps = state => ({
-  loggedIn: path(["auth", "loggedIn"], state)
-});
+    token: path(['auth', 'idToken'], state),
+    profile: path(['auth', 'profile'], state),
+    expiresAt: path(['auth', 'expiresAt'], state),
+})
 
 const mapDispatchToProps = {
-  logIn,
-  logOut
-};
+    setSession,
+}
 
 const enhance = compose(
-  connect(
-    mapStateToProps,
-    mapDispatchToProps
-  )
-);
+    connect(
+        mapStateToProps,
+        mapDispatchToProps
+    )
+)
 
-export default enhance(AuthProvider);
+export default enhance(AuthProvider)

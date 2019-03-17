@@ -1,34 +1,51 @@
-import React from "react";
-import { connect } from "react-redux";
-import { compose } from "redux";
-import { path, isEmpty } from "ramda";
+import React from 'react'
+import { gql } from 'apollo-boost'
+import { Query } from 'react-apollo'
+import { addPermissionMap } from '../../util/user'
 
-import { updateUsers } from "./actions";
+export const GET_USER_PROFILES = gql`
+    query {
+        users {
+            userId
+            email
+            title
+            blurb
+            nameFirst
+            nameLast
+            phone
+            locationCity
+            locationState
+            locationZip
+            pictureSmall
+            pictureMedium
+            pictureLarge
+            twitter
+            facebook
+            linkedin
 
+            permissions {
+                permissionId
+            }
+        }
+    }
+`
 class UsersProvider extends React.Component {
-  componentDidMount() {
-    if (isEmpty(this.props.userProfiles)) this.props.updateUsers();
-  }
+    render() {
+        return (
+            <Query query={GET_USER_PROFILES}>
+                {({ loading, error, data }) => {
+                    if (loading) return <div>Loading...</div>
+                    if (error) return <div>Error :(</div>
 
-  render() {
-    const { updateUsers, userProfiles } = this.props;
-    return this.props.render({ updateUsers, userProfiles });
-  }
+                    const mappedUsers = data.users.map(user =>
+                        addPermissionMap(user)
+                    )
+
+                    return this.props.render(mappedUsers)
+                }}
+            </Query>
+        )
+    }
 }
 
-const mapStateToProps = state => ({
-  userProfiles: path(["user", "userProfiles"], state)
-});
-
-const mapDispatchToProps = dispatch => ({
-  updateUsers: () => dispatch(updateUsers)
-});
-
-const enhance = compose(
-  connect(
-    mapStateToProps,
-    mapDispatchToProps
-  )
-);
-
-export default enhance(UsersProvider);
+export default UsersProvider

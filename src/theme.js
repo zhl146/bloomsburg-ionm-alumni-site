@@ -5,7 +5,8 @@ import Teal from "@material-ui/core/colors/teal";
 export default createMuiTheme({
   palette: {
     primary: DeepPurple,
-    secondary: Teal
+    secondary: Teal,
+    type: 'dark',
   },
   typography: {
     useNextVariants: true

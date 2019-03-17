@@ -1,35 +1,115 @@
-import React from "react";
-import { BrowserRouter, Route, Switch } from "react-router-dom";
-import { MuiThemeProvider } from "@material-ui/core";
+import React from 'react'
+import { BrowserRouter, Route, Switch } from 'react-router-dom'
+import { MuiThemeProvider, CssBaseline } from '@material-ui/core'
+import Cookies from 'js-cookie'
+import { ApolloProvider } from 'react-apollo'
+import { ApolloLink } from 'apollo-link'
+import { ApolloClient } from 'apollo-client'
+import { createHttpLink } from 'apollo-link-http'
+import { setContext } from 'apollo-link-context'
+import { InMemoryCache } from 'apollo-cache-inmemory'
+import { createUploadLink } from 'apollo-upload-client'
 
-import "@fortawesome/fontawesome-free/css/all.css";
-import AuthProvider from "./wrappers/AuthProvider";
-import Landing from "./Landing";
-import Connect from "./Connect";
-import Profile from "./Profile";
-import Work from "./Work";
+// styling
+import '@fortawesome/fontawesome-free/css/all.css'
+import theme from './theme'
 
-import theme from "./theme";
+// Components
+import ProtectedRoute from './Auth/ProtectedRoute'
+import Connect from './Connect'
+import Profile from './Profile'
+import ProfileUpdate from './ProfileUpdate'
+import Work from './Work'
+import Login from './Auth/Login'
+import Callback from './Auth/Callback'
+
+const httpLink = createHttpLink({
+    uri:
+        process.env.NODE_ENV !== 'development'
+            ? 'http://localhost:4000/graphql'
+            : 'https://graphql.buiomalum.com/',
+})
+
+const authLink = setContext((_, { headers }) => {
+    return {
+        headers: {
+            ...headers,
+            authorization: `Bearer ${Cookies.get('idToken')}`,
+        },
+    }
+})
+
+const client = new ApolloClient({
+    link: ApolloLink.from([
+        authLink,
+        createUploadLink({
+            uri:
+                process.env.NODE_ENV !== 'development'
+                    ? 'http://localhost:4000/graphql'
+                    : 'https://graphql.buiomalum.com/',
+        }),
+        httpLink,
+    ]),
+    cache: new InMemoryCache(),
+    fetchOptions: {
+        mode: 'no-cors',
+    },
+})
 
 const App = () => (
-  <MuiThemeProvider theme={theme}>
-    <AuthProvider
-      render={({ loggedIn }) =>
-        loggedIn ? (
-          <BrowserRouter>
-            <Switch>
-              <Route path="/" exact component={Connect} />
-              <Route path="/connect" component={Connect} />
-              <Route path="/profile" component={Profile} />
-              <Route path="/work" component={Work} />
-            </Switch>
-          </BrowserRouter>
-        ) : (
-          <Landing />
-        )
-      }
-    />
-  </MuiThemeProvider>
-);
+    <MuiThemeProvider theme={theme}>
+        <CssBaseline />
+        <ApolloProvider client={client}>
+            <BrowserRouter>
+                <Switch>
+                    <Route
+                        path="/"
+                        exact
+                        render={() => (
+                            <ProtectedRoute>
+                                <Connect />
+                            </ProtectedRoute>
+                        )}
+                    />
+                    <Route path="/login" component={Login} />
+                    <Route path="/callback" component={Callback} />
+                    )} />
+                    <Route
+                        path="/connect"
+                        render={() => (
+                            <ProtectedRoute>
+                                <Connect />
+                            </ProtectedRoute>
+                        )}
+                    />
+                    <Route
+                        path="/profile/edit"
+                        render={() => (
+                            <ProtectedRoute>
+                                <ProfileUpdate />
+                            </ProtectedRoute>
+                        )}
+                    />
+                    <Route
+                        path="/profile"
+                        render={() => (
+                            <ProtectedRoute>
+                                <Profile />
+                            </ProtectedRoute>
+                        )}
+                    />
+                    <Route
+                        path="/work"
+                        render={() => (
+                            <ProtectedRoute>
+                                <Work />
+                            </ProtectedRoute>
+                        )}
+                    />
+                </Switch>
+            </BrowserRouter>
+        </ApolloProvider>
+    </MuiThemeProvider>
+)
 
-export default App;
+export default App
