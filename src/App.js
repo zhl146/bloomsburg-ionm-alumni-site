@@ -25,9 +25,9 @@ import Callback from './Auth/Callback'
 
 const httpLink = createHttpLink({
     uri:
-        process.env.NODE_ENV !== 'development'
-            ? 'http://localhost:4000/graphql'
-            : 'https://graphql.buiomalum.com/',
+        process.env.NODE_ENV === 'production'
+            ? 'https://graphql.buiomalum.com/'
+            : 'http://localhost:4000/graphql',
 })
 
 const authLink = setContext((_, { headers }) => {
@@ -44,9 +44,9 @@ const client = new ApolloClient({
         authLink,
         createUploadLink({
             uri:
-                process.env.NODE_ENV !== 'development'
-                    ? 'http://localhost:4000/graphql'
-                    : 'https://graphql.buiomalum.com/',
+                process.env.NODE_ENV === 'production'
+                    ? 'https://graphql.buiomalum.com/'
+                    : 'http://localhost:4000/graphql',
         }),
         httpLink,
     ]),
