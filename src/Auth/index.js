@@ -2,7 +2,7 @@ import auth0 from 'auth0-js'
 import Cookies from 'js-cookie'
 
 const auth0Client = new auth0.WebAuth({
-    domain: 'buionmalumni.auth0.com',
+    domain: 'buiomalum.auth0.com',
     clientID: '2Zi0slF90q3xq3YdMoSgpQTFH0FZuMNl',
     responseType: 'token id_token',
     scope: 'openid email',
