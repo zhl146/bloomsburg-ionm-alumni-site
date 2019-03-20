@@ -27,7 +27,10 @@ export const requestLink = email =>
                 connection: 'email',
                 send: 'link',
                 email,
-                redirectUri: `http://localhost:3000/callback`,
+                redirectUri:
+                    process.env.NODE_ENV === 'production'
+                        ? `https://buiomalum.com/callback`
+                        : 'http://localhost:3000/callback',
             },
             (err, res) => {
                 err ? reject(err) : resolve(res)
@@ -46,7 +49,10 @@ export const handleAuthentication = hash =>
 
 export const signOut = () => {
     auth0Client.logout({
-        returnTo: 'http://localhost:3000',
+        returnTo:
+            process.env.NODE_ENV === 'production'
+                ? `https://buiomalum.com`
+                : 'http://localhost:3000',
         clientID: '2Zi0slF90q3xq3YdMoSgpQTFH0FZuMNl',
     })
     delSession()
