@@ -1,9 +1,11 @@
 import auth0 from 'auth0-js'
 import Cookies from 'js-cookie'
 
+const clientID = 'VlKNqq6nllflYyhbiw4vQnC0siZnQyaW'
+
 const auth0Client = new auth0.WebAuth({
     domain: 'buiomalum.auth0.com',
-    clientID: '2Zi0slF90q3xq3YdMoSgpQTFH0FZuMNl',
+    clientID,
     responseType: 'token id_token',
     scope: 'openid email',
 })
@@ -53,7 +55,7 @@ export const signOut = () => {
             process.env.NODE_ENV === 'production'
                 ? `https://buiomalum.com`
                 : 'http://localhost:3000',
-        clientID: '2Zi0slF90q3xq3YdMoSgpQTFH0FZuMNl',
+        clientID,
     })
     delSession()
 }
