@@ -3,13 +3,12 @@ import PropTypes from 'prop-types'
 import classnames from 'classnames'
 import { withStyles } from '@material-ui/core/styles'
 import { Typography, Toolbar, AppBar, Button } from '@material-ui/core'
-import { Work, Contacts, ExitToApp, Person } from '@material-ui/icons'
 import { Link } from 'react-router-dom'
 
 import { signOut, isAuthenticated } from '../Auth'
 
 function SimpleAppBar(props) {
-    const { classes, children, activeTab } = props
+    const { classes, children } = props
 
     const loggedIn = isAuthenticated()
 

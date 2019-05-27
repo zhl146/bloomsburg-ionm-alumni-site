@@ -2,7 +2,6 @@ import React, { Component } from 'react'
 import { Card, Avatar, Typography } from '@material-ui/core'
 import { withStyles } from '@material-ui/core/styles'
 import { compose } from 'redux'
-import classnames from 'classnames'
 
 import { formatLocation, formatName, formatTitle } from '../util/stringFormat'
 import Facebook from './Facebook'
@@ -13,6 +12,7 @@ class ContactCard extends Component {
     render() {
         const { profile, classes } = this.props
         const {
+            userId,
             email,
             title,
             blurb,
@@ -28,13 +28,14 @@ class ContactCard extends Component {
             twitter,
             facebook,
             linkedin,
+            avatarType,
         } = profile
         return (
             <Card className={classes.root}>
                 <div className={classes.avatarContainer}>
                     <Avatar
                         alt="user"
-                        src={pictureMedium}
+                        src={`https://avatars.dicebear.com/v2/${avatarType}/${userId}.svg`}
                         className={classes.userAvatar}
                     />
                 </div>

@@ -9,12 +9,15 @@ import {
     CardContent,
     CardActions,
     Divider,
+    Select,
+    MenuItem,
+    Avatar,
+    OutlinedInput,
 } from '@material-ui/core'
 import { Link, Redirect } from 'react-router-dom'
 
 import { GET_CURRENT_USER_PROFILE } from '../wrappers/UserProfileProvider'
 import { GET_USER_PROFILES } from '../wrappers/UsersProvider'
-import PictureEditor from './PictureEditor'
 
 const extractDefaultStateFromProps = ({
     email,
@@ -32,6 +35,7 @@ const extractDefaultStateFromProps = ({
     twitter,
     facebook,
     linkedin,
+    avatarType,
 }) => ({
     email,
     title,
@@ -48,6 +52,7 @@ const extractDefaultStateFromProps = ({
     twitter,
     facebook,
     linkedin,
+    avatarType,
 })
 
 const UPDATE_PROFILE = gql`
@@ -63,7 +68,7 @@ const UPDATE_PROFILE = gql`
         $twitter: String
         $linkedin: String
         $facebook: String
-        $picture: Upload
+        $avatarType: String
     ) {
         updateSelf(
             data: {
@@ -78,7 +83,7 @@ const UPDATE_PROFILE = gql`
                 twitter: $twitter
                 facebook: $facebook
                 linkedin: $linkedin
-                picture: $picture
+                avatarType: $avatarType
             }
         ) {
             userId
@@ -97,6 +102,7 @@ const UPDATE_PROFILE = gql`
             twitter
             facebook
             linkedin
+            avatarType
 
             permissions {
                 permissionId
@@ -106,13 +112,7 @@ const UPDATE_PROFILE = gql`
 `
 
 class ProfileUpdate extends React.Component {
-    state = {
-        ...extractDefaultStateFromProps(this.props.profile),
-        image: null,
-        editorRef: null,
-    }
-
-    imgRef = React.createRef()
+    state = extractDefaultStateFromProps(this.props.profile)
 
     genericTextInputOnChange = (fieldName, isNumber = false) => e =>
         this.setState({
@@ -128,22 +128,8 @@ class ProfileUpdate extends React.Component {
         this.state({ image })
     }
 
-    setEditorRef = editor =>
-        this.setState({
-            editorRef: editor,
-        })
-
-    getPictureBlob = () =>
-        new Promise((resolve, reject) => {
-            if (!this.state.editorRef) reject()
-            this.state.editorRef
-                .getImageScaledToCanvas()
-                .toBlob(blob => resolve(blob))
-        })
-
     handleUpdateProfile = updatefn => async () => {
-        // const picture = await this.getPictureBlob()
-        const { image, editorRef, ...updateParams } = this.state
+        const { ...updateParams } = this.state
 
         const variables = {
             ...updateParams,
@@ -172,9 +158,10 @@ class ProfileUpdate extends React.Component {
             twitter,
             facebook,
             linkedin,
-            pictureMedium,
+            avatarType,
         } = this.state
-        const { classes } = this.props
+        const { classes, profile } = this.props
+        const { userId } = profile
 
         return (
             <Mutation
@@ -197,15 +184,39 @@ class ProfileUpdate extends React.Component {
                         >
                             <CardContent>
                                 <div className={classes.formContainer}>
-                                    <PictureEditor
-                                        setEditorRef={this.setEditorRef}
-                                        imageUrl={
-                                            'https://images.unsplash.com/photo-1548422392-679e1fc2eba4?ixlib=rb-1.2.1&ixid=eyJhcHBfaWQiOjEyMDd9&auto=format&fit=crop&w=1384&q=80'
+                                    <div className={classes.avatarContainer}>
+                                        <Avatar
+                                            alt="user"
+                                            src={`https://avatars.dicebear.com/v2/${avatarType}/${userId}.svg`}
+                                            className={classes.userAvatar}
+                                        />
+                                    </div>
+
+                                    <Select
+                                        value={avatarType}
+                                        onChange={this.genericTextInputOnChange(
+                                            'avatarType'
+                                        )}
+                                        input={
+                                            <OutlinedInput
+                                                labelWidth={200}
+                                                name="Avatar"
+                                                label="Avatar"
+                                            />
                                         }
-                                        handleImageChange={
-                                            this.handleImageChange
-                                        }
-                                    />
+                                    >
+                                        <MenuItem value="female">
+                                            Female
+                                        </MenuItem>
+                                        <MenuItem value="male">Male</MenuItem>
+
+                                        <MenuItem value="jdenticon">
+                                            Identicon
+                                        </MenuItem>
+                                        <MenuItem value="gridy">
+                                            Monster
+                                        </MenuItem>
+                                    </Select>
                                     <Divider />
                                     <TextField
                                         label="First Name"
@@ -283,7 +294,7 @@ class ProfileUpdate extends React.Component {
                                         autoComplete="text"
                                         margin="normal"
                                         variant="outlined"
-                                        value={twitter}
+                                        value={twitter || ''}
                                         onChange={this.genericTextInputOnChange(
                                             'twitter'
                                         )}
@@ -294,7 +305,7 @@ class ProfileUpdate extends React.Component {
                                         autoComplete="text"
                                         margin="normal"
                                         variant="outlined"
-                                        value={facebook}
+                                        value={facebook || ''}
                                         onChange={this.genericTextInputOnChange(
                                             'facebook'
                                         )}
@@ -305,7 +316,7 @@ class ProfileUpdate extends React.Component {
                                         autoComplete="text"
                                         margin="normal"
                                         variant="outlined"
-                                        value={linkedin}
+                                        value={linkedin || ''}
                                         onChange={this.genericTextInputOnChange(
                                             'linkedin'
                                         )}

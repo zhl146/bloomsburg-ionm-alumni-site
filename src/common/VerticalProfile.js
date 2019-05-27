@@ -10,6 +10,7 @@ class VerticalProfile extends Component {
     render() {
         const { profile, classes } = this.props
         const {
+            userId,
             email,
             title,
             blurb,
@@ -25,19 +26,17 @@ class VerticalProfile extends Component {
             twitter,
             facebook,
             linkedin,
+            avatarType,
         } = profile
         return (
             <div className={classes.root}>
-                <Avatar
-                    alt="user"
-                    src={pictureMedium}
-                    className={classes.userAvatar}
-                >
-                    {!pictureMedium &&
-                        `${nameFirst ? nameFirst[0] : ''}${
-                            nameLast ? nameLast[0] : ''
-                        }`.toUpperCase()}
-                </Avatar>
+                <div className={classes.userAvatar}>
+                    <Avatar
+                        alt="user"
+                        src={`https://avatars.dicebear.com/v2/${avatarType}/${userId}.svg`}
+                        className={classes.userAvatar}
+                    />
+                </div>
                 <Typography variant="h6">{`${capFirst(nameFirst)} ${capFirst(
                     nameLast
                 )}`}</Typography>

@@ -27,7 +27,7 @@ const httpLink = createHttpLink({
     uri:
         process.env.NODE_ENV === 'production'
             ? 'https://graphql.buiomalum.com/'
-            : 'http://localhost:4000/graphql',
+            : 'http://localhost:4000',
 })
 
 const authLink = setContext((_, { headers }) => {
@@ -46,7 +46,7 @@ const client = new ApolloClient({
             uri:
                 process.env.NODE_ENV === 'production'
                     ? 'https://graphql.buiomalum.com/'
-                    : 'http://localhost:4000/graphql',
+                    : 'http://localhost:4000',
         }),
         httpLink,
     ]),

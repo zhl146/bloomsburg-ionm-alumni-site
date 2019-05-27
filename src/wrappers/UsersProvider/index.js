@@ -22,6 +22,7 @@ export const GET_USER_PROFILES = gql`
             twitter
             facebook
             linkedin
+            avatarType
 
             permissions {
                 permissionId
